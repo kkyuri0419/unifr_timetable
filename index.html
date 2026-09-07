@@ -27,6 +27,9 @@
   .btn-primary:hover{background:var(--accent-h);}
   .btn-ghost{background:transparent; color:var(--ink); border:1px solid var(--line); padding:10px 14px;}
   .btn-ghost:hover{border-color:#C9CFD8; background:#fff;}
+  .btn-ghost:disabled{opacity:.45; cursor:default;}
+  .btn-ghost:disabled:hover{border-color:var(--line); background:transparent;}
+  .btn-ghost.dirty{border-color:var(--accent); color:var(--accent); font-weight:700;}
   button:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 
   .bar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px;}
@@ -141,6 +144,7 @@
       <p>University of Fribourg · 2026 가을학기 (Digital Neuroscience)</p>
     </div>
     <div class="actions">
+      <button class="btn-ghost" id="exportBtn" onclick="exportHtml()" disabled>내보내기</button>
       <button class="btn-ghost" onclick="window.print()">인쇄 · PDF</button>
       <button class="btn-primary" onclick="openModal()">과목 추가</button>
     </div>
@@ -476,7 +480,7 @@ function renderList(){
 function toggleCourse(id){
   const c=courseById(id);
   c.enabled = (c.enabled===false);
-  saveCourses(); render();
+  saveCourses(); markDirty(); render();
 }
 
 /* modal */
@@ -527,7 +531,7 @@ function saveCourse(){
   const ects=isNaN(ectsNum)?null:ectsNum;
   if(editingType==="sessions"){
     const c=courseById(editingId); c.name=name; c.color=draftColor; c.ects=ects;
-    saveCourses(); render(); closeModal(); return;
+    saveCourses(); markDirty(); render(); closeModal(); return;
   }
   document.getElementById("dateErr").textContent=""; document.getElementById("meetErr").textContent="";
   if(!cStart.value||!cEnd.value||cStart.value>cEnd.value){ document.getElementById("dateErr").textContent="시작일과 종료일을 올바르게 입력하세요."; return; }
@@ -540,15 +544,45 @@ function saveCourse(){
   }else{
     state.courses.push({id:"c"+Date.now(),name,short:name.split(/\s+/)[0].slice(0,8),color:draftColor,ects,type:"weekly",start:cStart.value,end:cEnd.value,meetings,exclude,overrides:{}});
   }
-  saveCourses(); render(); closeModal();
+  saveCourses(); markDirty(); render(); closeModal();
 }
 function delCourse(id){
   const c=courseById(id);
   if(!confirm(`"${c.name}" 과목을 삭제할까요?`)) return;
-  state.courses=state.courses.filter(x=>x.id!==id); saveCourses(); render();
+  state.courses=state.courses.filter(x=>x.id!==id); saveCourses(); markDirty(); render();
 }
 document.getElementById("overlay").addEventListener("click",e=>{ if(e.target.id==="overlay") closeModal(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+let dirty=false;
+function markDirty(){ dirty=true; updateExportBtn(); }
+function updateExportBtn(){
+  const b=document.getElementById("exportBtn"); if(!b) return;
+  b.disabled=!dirty;
+  b.classList.toggle("dirty",dirty);
+  b.textContent = dirty ? "변경사항 저장 ●" : "내보내기";
+}
+async function exportHtml(){
+  let src;
+  try{ src=await (await fetch(location.href,{cache:"no-store"})).text(); }
+  catch(e){ src=null; }
+  if(!src || !/const SEED=\[/.test(src)){
+    alert("이 버튼은 실제 웹주소(GitHub Pages 등)에서 열었을 때 동작해요.\n지금 화면에서는 미리보기라 소스를 읽지 못했어요.");
+    return;
+  }
+  const m=src.match(/cal_courses_v(\d+)/);
+  const curKey=m?m[0]:"cal_courses_v4";
+  const nextKey=m?("cal_courses_v"+(parseInt(m[1],10)+1)):"cal_courses_v5";
+  const seedJson=JSON.stringify(state.courses);
+  let out=src.replace(/const SEED=\[[\s\S]*?\n\];/, ()=>"const SEED="+seedJson+";");
+  out=out.split(curKey).join(nextKey);
+  const blob=new Blob([out],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="index.html"; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  dirty=false; updateExportBtn();
+  alert("index.html 파일을 내려받았어요.\nGitHub 저장소에 같은 이름으로 업로드(덮어쓰기)하면 모든 기기에 반영돼요.");
+}
 
 const REQUIRED_IDS=["c1","c2","c3","c10"];
 const ECTS_SEED={c1:3,c2:3,c3:5,c4:3,c5:3,c6:3,c7:3,c8:3,c9:5,c10:5,c11:3};
@@ -563,6 +597,7 @@ const ECTS_SEED={c1:3,c2:3,c3:5,c4:3,c5:3,c6:3,c7:3,c8:3,c9:5,c10:5,c11:3};
   });
   saveCourses();
   render();
+  updateExportBtn();
 })();
 </script>
 </body>
