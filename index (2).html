@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학기 달력 · University of Fribourg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#EEF0F4; --card:#FFFFFF; --ink:#16202E; --muted:#6B7480;
+    --line:#E2E6EC; --accent:#4B45C6; --accent-h:#3E38B0; --wknd:#F5F6F9;
+    --clash:#D64541;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--page); color:var(--ink); font-family:"Inter",system-ui,sans-serif; font-size:15px; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px; margin:0 auto; padding:28px 20px 64px;}
+
+  header.top{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px;}
+  .title h1{font-family:"Space Grotesk",sans-serif; font-weight:700; font-size:30px; letter-spacing:-0.5px; margin:0; line-height:1;}
+  .title p{margin:6px 0 0; color:var(--muted); font-size:13.5px;}
+  .actions{display:flex; gap:10px;}
+  button{font-family:inherit; cursor:pointer; border:none; border-radius:10px; font-weight:600; font-size:14px;}
+  .btn-primary{background:var(--accent); color:#fff; padding:10px 16px;}
+  .btn-primary:hover{background:var(--accent-h);}
+  .btn-ghost{background:transparent; color:var(--ink); border:1px solid var(--line); padding:10px 14px;}
+  .btn-ghost:hover{border-color:#C9CFD8; background:#fff;}
+  button:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  .bar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px;}
+  .legend{display:flex; gap:13px; flex-wrap:wrap;}
+  .legend .lg{display:flex; align-items:center; gap:7px; font-size:12.5px; color:#39424F;}
+  .legend .sw{width:12px; height:12px; border-radius:4px;}
+  .legend .off-key,.legend .clash-key{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted);}
+  .legend .off-sw{width:12px; height:12px; border-radius:4px; background:repeating-linear-gradient(45deg,#D7DBE1,#D7DBE1 3px,#E7EAEF 3px,#E7EAEF 6px);}
+  .mnav{display:flex; gap:6px;}
+  .mnav a{font-family:"Space Grotesk",sans-serif; font-size:13px; text-decoration:none; color:var(--muted); border:1px solid var(--line); padding:6px 11px; border-radius:8px; background:#fff;}
+  .mnav a:hover{color:var(--ink); border-color:#C9CFD8;}
+
+  /* conflicts */
+  .clash-box{background:#FDECEC; border:1px solid #F5C6C4; border-radius:14px; padding:14px 16px; margin-bottom:20px;}
+  .clash-box h2{font-family:"Space Grotesk",sans-serif; font-size:15px; margin:0 0 10px; color:#A23530; font-weight:600;}
+  .clash-box.ok{background:#E9F6EC; border-color:#BFE4C7;}
+  .clash-box.ok h2{color:#2C7A34; margin:0;}
+  .clash-item{font-size:13px; color:#3A2B2A; padding:5px 0; border-top:1px solid #F6D3D1; line-height:1.5;}
+  .clash-item:first-of-type{border-top:none;}
+  .clash-item .cd{font-family:"Space Grotesk",sans-serif; font-weight:600; color:#A23530; margin-right:8px; display:inline-block; min-width:64px;}
+  .clash-item .x{color:var(--clash); font-weight:700; margin:0 6px;}
+  .clash-item b{font-weight:600;}
+
+  .month{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 16px 8px; margin-bottom:20px;}
+  .month h2{font-family:"Space Grotesk",sans-serif; font-size:19px; margin:2px 4px 12px; font-weight:600;}
+  .month h2 span{color:var(--muted); font-weight:500; font-size:14px; margin-left:6px;}
+  .cal{display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
+  .dow{font-family:"Space Grotesk",sans-serif; text-align:center; font-size:12px; color:var(--muted); padding:2px 0 6px; font-weight:600;}
+  .dow.we{color:#B0B6BE;}
+  .day{min-height:96px; border:1px solid #EDEFF3; border-radius:9px; padding:5px 6px; display:flex; flex-direction:column; gap:4px; background:#fff;}
+  .day.we{background:var(--wknd);}
+  .day.out{background:#FAFBFC; border-color:#F1F3F6;}
+  .daynum{font-family:"Space Grotesk",sans-serif; font-size:12.5px; color:#4A5462; font-weight:600; line-height:1; align-self:flex-start;}
+  .day.out .daynum{color:#C3C9D1;}
+  .daynum.today{background:var(--accent); color:#fff; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:11.5px;}
+  .chip{border-radius:7px; padding:4px 6px; font-size:11px; line-height:1.25; cursor:pointer; border-left:3px solid; position:relative;}
+  .chip .cn{font-weight:600; display:block;}
+  .chip .cr{opacity:.82; font-size:10.5px;}
+  .chip:hover{filter:brightness(.97);}
+  .chip.clash{box-shadow:0 0 0 2px var(--clash); }
+  .chip.clash .warn{position:absolute; top:-6px; right:-5px; font-size:11px;}
+  .chip.off{background:repeating-linear-gradient(45deg,#EDEFF2,#EDEFF2 4px,#F5F6F8 4px,#F5F6F8 8px); border-left-color:#C2C8D0; color:#8B929B; cursor:default;}
+  .chip.off .cn{text-decoration:line-through;}
+  .chip.off .tag{text-decoration:none; font-weight:700; color:#7A828C;}
+
+  .list-head{display:flex; align-items:baseline; justify-content:space-between; margin:26px 2px 12px; flex-wrap:wrap; gap:8px;}
+  .list-head h2{font-family:"Space Grotesk",sans-serif; font-size:17px; margin:0; font-weight:600;}
+  .list-head span{color:var(--muted); font-size:13px;}
+  .courses{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px;}
+  .course{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 15px; position:relative;}
+  .course .dot{width:10px; height:10px; border-radius:3px; display:inline-block; margin-right:8px; vertical-align:middle;}
+  .course h3{font-size:15px; margin:0 0 8px; font-weight:600; padding-right:118px; line-height:1.3;}
+  .course .meta{color:var(--muted); font-size:12.5px; line-height:1.65;}
+  .course .meta b{color:#39424F; font-weight:600;}
+  .course .tagline{display:inline-block; font-size:11px; color:#5A6472; background:#EEF0F4; border-radius:6px; padding:2px 7px; margin-bottom:8px;}
+  .course .tagline.online{color:#475569; background:#E2E8F0;}
+  .course .tagline.event{color:#57534E; background:#E7E5E4;}
+  .course .note{margin-top:8px; font-size:11.5px; color:#8A5A00; background:#FDF3DD; border-radius:7px; padding:4px 8px; display:inline-block; margin-right:5px;}
+  .course .note.ov{color:#5A4B00; background:#F3F0E0;}
+  .course .ctrls{position:absolute; top:12px; right:12px; display:flex; gap:6px; align-items:center;}
+  .icon-btn{background:transparent; border:1px solid var(--line); border-radius:8px; width:30px; height:30px; color:var(--muted); font-size:13px; display:flex; align-items:center; justify-content:center;}
+  .icon-btn:hover{color:var(--ink); border-color:#C9CFD8;}
+  .sw-toggle{width:36px; height:21px; border-radius:11px; background:#CBD2DB; position:relative; cursor:pointer; padding:0; border:none; transition:background .15s; flex:0 0 auto;}
+  .sw-toggle.on{background:var(--accent);}
+  .sw-toggle .knob{position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; transition:left .15s; box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .sw-toggle.on .knob{left:17px;}
+  .course.off{opacity:.5;}
+  .course.off h3{text-decoration:line-through; text-decoration-color:#B4BAC2;}
+  .req-badge{display:inline-block; font-size:10px; font-weight:700; color:#fff; background:var(--accent); border-radius:5px; padding:2px 6px; margin-left:7px; vertical-align:middle; letter-spacing:.02em;}
+  .ects-badge{display:inline-block; font-size:10px; font-weight:700; color:#7A5B12; background:#F6ECD4; border-radius:5px; padding:2px 6px; margin-left:6px; vertical-align:middle;}
+  .ects-badge.unk{color:#8A929B; background:#EEF0F4; font-weight:600;}
+  .list-head .cs{font-size:12.5px; color:var(--muted); margin-left:14px; white-space:nowrap;}
+  .list-head .cs b{font-family:"Space Grotesk",sans-serif; color:#39424F; font-weight:700; font-size:14px;}
+  .list-head .cs.total b{color:var(--accent);}
+  .list-head .cs.warn{color:#A45A08; margin-left:10px;}
+
+  .overlay{position:fixed; inset:0; background:rgba(18,25,36,.42); display:none; align-items:flex-start; justify-content:center; padding:36px 16px; overflow-y:auto; z-index:50;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff; border-radius:18px; width:100%; max-width:500px; padding:24px; box-shadow:0 24px 60px rgba(18,25,36,.28);}
+  .modal h2{font-family:"Space Grotesk",sans-serif; font-size:20px; margin:0 0 18px; font-weight:600;}
+  .field{margin-bottom:16px;}
+  .field > label{display:block; font-size:13px; font-weight:600; color:#39424F; margin-bottom:6px;}
+  .hint{font-weight:400; color:var(--muted); font-size:11.5px;}
+  input[type=text], input[type=date], select{width:100%; padding:10px 11px; border:1px solid var(--line); border-radius:9px; font-family:inherit; font-size:14px; color:var(--ink); background:#fff;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .swatches{display:flex; gap:8px; flex-wrap:wrap;}
+  .swatch{width:30px; height:30px; border-radius:8px; cursor:pointer; border:2px solid transparent;}
+  .swatch.sel{border-color:var(--ink);}
+  .meet-row{display:grid; grid-template-columns:62px 1fr 1.1fr 32px; gap:7px; align-items:center; margin-bottom:8px;}
+  .meet-row select, .meet-row input{padding:8px 8px; font-size:13px;}
+  .meet-row .rm{background:transparent; border:1px solid var(--line); border-radius:8px; height:36px; color:var(--muted);}
+  .meet-row .rm:hover{color:#C0392B; border-color:#E7B6b0;}
+  .add-meet{background:transparent; border:1px dashed #C9CFD8; color:var(--muted); border-radius:9px; padding:8px; width:100%; font-weight:500; font-size:13px;}
+  .add-meet:hover{color:var(--ink); border-color:var(--accent);}
+  .sess-info{font-size:12.5px; color:#5A6472; background:#F6F7F9; border-radius:9px; padding:10px 12px; max-height:180px; overflow-y:auto; line-height:1.7;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:22px;}
+  .err{color:#C0392B; font-size:12.5px; margin-top:4px;}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+  @media print{
+    body{background:#fff;} .actions,.mnav,.course .ctrls{display:none !important;}
+    .month{border:1px solid #bbb; break-inside:avoid;} .wrap{padding:0;}
+  }
+  @media (max-width:560px){ .day{min-height:74px;} .chip .cr{display:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title">
+      <h1>학기 달력</h1>
+      <p>University of Fribourg · 2026 가을학기 (Digital Neuroscience)</p>
+    </div>
+    <div class="actions">
+      <button class="btn-ghost" onclick="window.print()">인쇄 · PDF</button>
+      <button class="btn-primary" onclick="openModal()">과목 추가</button>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="legend" id="legend"></div>
+    <div class="mnav" id="mnav"></div>
+  </div>
+
+  <div id="clashBox"></div>
+  <div id="months"></div>
+
+  <div class="list-head">
+    <h2>과목 목록</h2>
+    <span id="count"></span>
+  </div>
+  <div class="courses" id="courses"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h2 id="modalTitle">과목 추가</h2>
+    <div class="field">
+      <label for="cName">과목명</label>
+      <input type="text" id="cName" placeholder="예: Foundation of informatics" autocomplete="off">
+      <div class="err" id="nameErr"></div>
+    </div>
+    <div class="field">
+      <label>색상</label>
+      <div class="swatches" id="swatches"></div>
+    </div>
+    <div class="field">
+      <label for="cEcts">학점 (ECTS) <span class="hint">선택 · 숫자</span></label>
+      <input type="text" id="cEcts" inputmode="numeric" placeholder="예: 3" autocomplete="off">
+    </div>
+    <div id="weeklyFields">
+      <div class="field">
+        <label>학기 기간</label>
+        <div class="row2"><input type="date" id="cStart"><input type="date" id="cEnd"></div>
+        <div class="err" id="dateErr"></div>
+      </div>
+      <div class="field">
+        <label>요일 · 시간 · 강의실</label>
+        <div id="meets"></div>
+        <button class="add-meet" onclick="addMeetRow()">+ 요일 추가</button>
+        <div class="err" id="meetErr"></div>
+      </div>
+      <div class="field">
+        <label for="cExclude">휴강 날짜 <span class="hint">선택 · 쉼표로 구분 (예: 2026-11-16)</span></label>
+        <input type="text" id="cExclude" placeholder="2026-11-16, 2026-12-08" autocomplete="off">
+      </div>
+    </div>
+    <div class="field" id="sessInfoField" style="display:none">
+      <label>수업 일정 <span class="hint">불규칙 · 읽기 전용</span></label>
+      <div class="sess-info" id="sessInfo"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">취소</button>
+      <button class="btn-primary" onclick="saveCourse()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DAY_DEFS=[{js:1,ko:"월"},{js:2,ko:"화"},{js:3,ko:"수"},{js:4,ko:"목"},{js:5,ko:"금"}];
+const KO_DOW=["일","월","화","수","목","금","토"];
+const SLOTS=["08:15-10:00","10:15-12:00","13:15-15:00","13:15-16:00","14:15-17:00","15:15-17:00","17:15-19:00"];
+const PALETTE=[
+  {bg:"#E5E7FB",fg:"#4338CA"},{bg:"#D3F5EE",fg:"#0E7C6F"},
+  {bg:"#FBECC8",fg:"#A45A08"},{bg:"#FBE1EC",fg:"#B21E63"},
+  {bg:"#DCEEFB",fg:"#1667A6"},{bg:"#DDF3DC",fg:"#2C7A34"},
+  {bg:"#ECE1FB",fg:"#7C3AED"},{bg:"#FBE3D6",fg:"#C2410C"},
+  {bg:"#D2F0F5",fg:"#0E7490"},
+  {bg:"#E2E8F0",fg:"#475569"},
+  {bg:"#EAF3D0",fg:"#4D7C0F"},
+  {bg:"#E7E5E4",fg:"#57534E"},
+];
+const TODAY="2026-09-07";
+
+const SEED=[
+  {id:"c1",name:"Foundation of informatics",short:"Info",color:0,type:"weekly",
+   start:"2026-09-14",end:"2026-12-14",
+   meetings:[{day:1,slot:"10:15-12:00",room:"PER 21, E140"}],
+   exclude:["2026-11-16"],overrides:{}},
+  {id:"c2",name:"Current topics in digital neuroscience",short:"Neuro",color:1,type:"weekly",
+   start:"2026-09-15",end:"2026-12-15",
+   meetings:[{day:2,slot:"10:15-12:00",room:"PER 21, E120"}],
+   exclude:["2026-12-08"],
+   overrides:{"2026-10-27":"PER 21, E040","2026-11-03":"PER 21, E140","2026-12-01":"PER 21, E140"}},
+  {id:"c3",name:"Cybernetic Systems: Bridging Brains, Machines and society",short:"Cyber",color:2,type:"weekly",
+   start:"2026-09-16",end:"2026-12-18",
+   meetings:[{day:3,slot:"08:15-10:00",room:"PER 21, A230"},{day:5,slot:"08:15-10:00",room:"PER 21, E130"}],
+   exclude:[],overrides:{}},
+  {id:"c4",name:"Central nervous system regeneration and repair",short:"CNS",color:3,type:"sessions",sessions:[
+    {date:"2026-09-24",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
+    {date:"2026-09-30",start:"09:15",end:"11:00",room:"PER 09, 0.108"},
+    {date:"2026-10-02",start:"08:15",end:"10:00",room:"PER 02, 0.403"},
+    {date:"2026-10-07",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
+    {date:"2026-10-08",start:"10:15",end:"12:00",room:"PER 21, G414"},
+    {date:"2026-10-13",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
+    {date:"2026-10-14",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
+    {date:"2026-10-21",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
+    {date:"2026-10-26",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
+    {date:"2026-10-26",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
+    {date:"2026-11-04",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
+    {date:"2026-11-05",start:"10:15",end:"12:00",room:"PER 21, G414"},
+  ]},
+  {id:"c5",name:"Scientific communication",short:"SciComm",color:4,type:"sessions",sessions:[
+    {date:"2026-09-21",start:"13:15",end:"15:00",room:"PER 09, 1.117"},
+    {date:"2026-09-28",start:"13:15",end:"15:00",room:"PER 09, 1.117"},
+    {date:"2026-10-05",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
+    {date:"2026-10-20",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
+    {date:"2026-10-28",start:"10:15",end:"12:00",room:"PER 09, 1.117"},
+    {date:"2026-10-29",start:"10:15",end:"12:00",room:"PER 09, 1.117"},
+    {date:"2026-12-07",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
+    {date:"2026-12-11",start:"09:15",end:"12:00",room:"PER 02, 0.403"},
+  ]},
+  {id:"c6",name:"Behavioural methods in neuroscience",short:"Behav",color:5,type:"sessions",sessions:[
+    {date:"2026-11-06",start:"13:15",end:"17:00",room:"PER 02, 0.403"},
+    {date:"2026-11-09",start:"13:15",end:"17:00",room:"PER 02, 0.403"},
+    {date:"2026-11-17",start:"13:15",end:"17:00",room:"PER 09, 0.114"},
+    {date:"2026-12-07",start:"13:15",end:"17:00",room:"PER 09, 0.108"},
+    {date:"2026-12-09",start:"13:15",end:"17:00",room:"PER 02, 0.403"},
+    {date:"2026-12-14",start:"13:15",end:"17:00",room:"PER 09, 0.108"},
+    {date:"2026-12-16",start:"13:15",end:"15:00",room:"PER 21, F205"},
+  ]},
+  {id:"c7",name:"Neuroethics",short:"Ethics",color:6,type:"sessions",sessions:[
+    {date:"2026-11-13",start:"09:15",end:"17:00",room:"RM 01, C-0.101"},
+    {date:"2026-12-11",start:"09:15",end:"17:00",room:"RM 01, C-0.101"},
+  ]},
+  {id:"c8",name:"Introduction to Matlab I",short:"Matlab",color:7,type:"weekly",
+   start:"2026-11-09",end:"2026-12-14",
+   meetings:[{day:1,slot:"08:15-10:00",room:"PER 21, B230"}],
+   exclude:["2026-11-16"],overrides:{}},
+  {id:"c9",name:"Big data infrastructures",short:"BigData",color:8,type:"weekly",
+   start:"2026-09-16",end:"2026-12-16",
+   meetings:[{day:3,slot:"14:15-17:00",room:"PER 21, A140"}],
+   exclude:[],overrides:{}},
+  {id:"c10",name:"Data analytics in Python",short:"Python",color:9,type:"async",ects:5},
+  {id:"c11",name:"Data analysis and statistics with the R programming language",short:"R stats",color:10,type:"weekly",
+   start:"2026-10-15",end:"2026-12-17",
+   meetings:[{day:4,slot:"13:15-16:00",room:"PER 21, B230"}],
+   exclude:[],overrides:{},enabled:false},
+  {id:"c12",name:"Introduction to the Master in Digital Neuroscience and Q&A",short:"석사 OT",color:11,type:"sessions",event:true,ects:0,sessions:[
+    {date:"2026-09-14",start:"16:00",end:"17:00",room:"PER 21, A303"},
+  ]},
+];
+
+let state={courses:[]};
+let editingId=null, editingType="weekly", draftColor=0;
+
+/* storage */
+async function loadCourses(){ try{ const v=localStorage.getItem("cal_courses_v4"); if(v) return JSON.parse(v); }catch(e){} return null; }
+async function saveCourses(){ try{ localStorage.setItem("cal_courses_v4", JSON.stringify(state.courses)); }catch(e){} }
+
+/* date utils */
+function pad(n){ return String(n).padStart(2,"0"); }
+function fmt(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function parse(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function mdShort(s){ const [,m,d]=s.split("-"); return Number(m)+"/"+Number(d); }
+function dow(s){ return KO_DOW[parse(s).getDay()]; }
+function tmin(t){ const [h,m]=t.split(":").map(Number); return h*60+m; }
+function esc(s){ return (s||"").replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+function roomTail(r){ const p=(r||"").split(","); return (p[p.length-1]||"").trim(); }
+function courseById(id){ return state.courses.find(c=>c.id===id); }
+
+/* build index + conflicts */
+function build(){
+  const byDate={};
+  const push=(ds,e)=>{ (byDate[ds]=byDate[ds]||[]).push(e); };
+  state.courses.forEach(c=>{
+    if(c.enabled===false) return;
+    if(c.type==="async") return;
+    if(c.type==="sessions"){
+      (c.sessions||[]).forEach(s=> push(s.date,{courseId:c.id,kind:"class",start:s.start,end:s.end,room:s.room}));
+    }else{
+      const ex=new Set(c.exclude||[]); let d=parse(c.start), end=parse(c.end);
+      while(d<=end){
+        const ds=fmt(d), wd=d.getDay();
+        c.meetings.forEach(m=>{ if(wd===m.day){
+          const [st,en]=m.slot.split("-");
+          if(ex.has(ds)) push(ds,{courseId:c.id,kind:"off",start:st,end:en,room:m.room});
+          else push(ds,{courseId:c.id,kind:"class",start:st,end:en,room:(c.overrides&&c.overrides[ds])||m.room});
+        }});
+        d.setDate(d.getDate()+1);
+      }
+    }
+  });
+  const conflicts=[];
+  Object.keys(byDate).forEach(ds=>{
+    byDate[ds].sort((a,b)=>tmin(a.start)-tmin(b.start));
+    const cls=byDate[ds].filter(e=>e.kind==="class");
+    for(let i=0;i<cls.length;i++)for(let j=i+1;j<cls.length;j++){
+      const a=cls[i],b=cls[j];
+      if(tmin(a.start)<tmin(b.end)&&tmin(b.start)<tmin(a.end)){ a.conflict=true; b.conflict=true; conflicts.push({date:ds,a,b}); }
+    }
+  });
+  conflicts.sort((x,y)=> x.date<y.date?-1:x.date>y.date?1:0);
+  return {byDate, conflicts};
+}
+function calRange(){
+  const ds=[];
+  state.courses.forEach(c=>{
+    if(c.enabled===false) return;
+    if(c.type==="async") return;
+    if(c.type==="sessions") (c.sessions||[]).forEach(s=>ds.push(s.date));
+    else { ds.push(c.start); ds.push(c.end); }
+  });
+  if(!ds.length) return {y0:2026,m0:8,y1:2026,m1:11};
+  ds.sort();
+  const a=parse(ds[0]), b=parse(ds[ds.length-1]);
+  return {y0:a.getFullYear(),m0:a.getMonth(),y1:b.getFullYear(),m1:b.getMonth()};
+}
+
+/* render */
+let MODEL={byDate:{},conflicts:[]};
+function render(){ MODEL=build(); renderLegend(); renderClashes(); renderMonths(); renderList(); }
+
+function renderLegend(){
+  let html=state.courses.filter(c=>c.enabled!==false).map(c=>{const col=PALETTE[c.color]||PALETTE[0];
+    return `<div class="lg"><span class="sw" style="background:${col.fg}"></span>${esc(c.name)}${c.required?'<span class="req-badge">필수</span>':''}</div>`;}).join("");
+  html+=`<div class="off-key"><span class="off-sw"></span>휴강</div>`;
+  html+=`<div class="clash-key"><span style="color:var(--clash);font-weight:700">⚠</span>시간 충돌</div>`;
+  document.getElementById("legend").innerHTML=html;
+}
+
+function renderClashes(){
+  const box=document.getElementById("clashBox");
+  const cf=MODEL.conflicts;
+  const anyOn=state.courses.some(c=>c.enabled!==false);
+  if(!cf.length){
+    box.innerHTML = anyOn ? `<div class="clash-box ok"><h2>✓ 시간 충돌 없음</h2></div>` : "";
+    return;
+  }
+  const items=cf.map(k=>{
+    const ca=courseById(k.a.courseId), cb=courseById(k.b.courseId);
+    const colA=(PALETTE[ca.color]||PALETTE[0]).fg, colB=(PALETTE[cb.color]||PALETTE[0]).fg;
+    return `<div class="clash-item"><span class="cd">${mdShort(k.date)} (${dow(k.date)})</span>`+
+      `<b style="color:${colA}">${esc(ca.name)}</b> ${k.a.start}–${k.a.end}<span class="x">↔</span>`+
+      `<b style="color:${colB}">${esc(cb.name)}</b> ${k.b.start}–${k.b.end}</div>`;
+  }).join("");
+  box.innerHTML=`<div class="clash-box"><h2>⚠ 시간 충돌 ${cf.length}건</h2>${items}</div>`;
+}
+
+function renderMonths(){
+  const {y0,m0,y1,m1}=calRange();
+  const host=document.getElementById("months"), nav=document.getElementById("mnav");
+  host.innerHTML=""; nav.innerHTML="";
+  let y=y0,m=m0;
+  while(y<y1||(y===y1&&m<=m1)){
+    const secId="mo-"+y+"-"+m;
+    nav.insertAdjacentHTML("beforeend",`<a href="#${secId}">${m+1}월</a>`);
+    host.insertAdjacentHTML("beforeend",monthHTML(y,m,secId));
+    m++; if(m>11){m=0;y++;}
+  }
+}
+function monthHTML(y,m,secId){
+  const first=new Date(y,m,1);
+  const lead=(first.getDay()+6)%7;
+  const dim=new Date(y,m+1,0).getDate();
+  const weeks=Math.ceil((lead+dim)/7);
+  const dows=["월","화","수","목","금","토","일"];
+  let cells=dows.map((d,i)=>`<div class="dow ${i>=5?'we':''}">${d}</div>`).join("");
+  for(let i=0;i<weeks*7;i++){
+    const dt=new Date(y,m,1-lead+i), inMonth=dt.getMonth()===m, ds=fmt(dt);
+    const we=(dt.getDay()===0||dt.getDay()===6);
+    let inner=`<span class="daynum ${ds===TODAY?'today':''}">${dt.getDate()}</span>`;
+    if(inMonth&&MODEL.byDate[ds]){
+      MODEL.byDate[ds].forEach(e=>{
+        const c=courseById(e.courseId); if(!c) return;
+        const col=PALETTE[c.color]||PALETTE[0];
+        if(e.kind==="off"){
+          inner+=`<div class="chip off" title="${esc(c.name)} · 휴강"><span class="cn">${esc(c.short||c.name)}</span> <span class="tag">휴강</span></div>`;
+        }else{
+          const warn=e.conflict?`<span class="warn">⚠</span>`:"";
+          inner+=`<div class="chip ${e.conflict?'clash':''}" style="background:${col.bg};color:${col.fg};border-left-color:${col.fg}" title="${esc(c.name)} · ${e.start}–${e.end} · ${esc(e.room)}${e.conflict?' · ⚠ 시간 충돌':''}" onclick="openModal('${c.id}')">${warn}<span class="cn">${esc(c.short||c.name)}</span><span class="cr">${e.start} · ${esc(roomTail(e.room))}</span></div>`;
+        }
+      });
+    }
+    cells+=`<div class="day ${inMonth?'':'out'} ${we?'we':''}">${inner}</div>`;
+  }
+  return `<section class="month" id="${secId}"><h2>${m+1}월<span>${y}</span></h2><div class="cal">${cells}</div></section>`;
+}
+
+function renderList(){
+  let reqOn=0, elecOn=0, onCount=0, unknownOn=0;
+  state.courses.forEach(c=>{
+    if(c.enabled===false) return;
+    onCount++;
+    const v=(typeof c.ects==="number")?c.ects:0;
+    if(c.ects==null) unknownOn++;
+    if(c.required) reqOn+=v; else elecOn+=v;
+  });
+  const extra = unknownOn>0 ? `<span class="cs warn">+ 미정 ${unknownOn}과목</span>` : "";
+  document.getElementById("count").innerHTML =
+    `<span class="cs">수강 <b>${onCount}</b></span>`+
+    `<span class="cs">필수 <b>${reqOn}</b></span>`+
+    `<span class="cs">선택 <b>${elecOn}</b></span>`+
+    `<span class="cs total">합계 <b>${reqOn+elecOn}</b> ECTS</span>`+extra;
+  const listOrder=[...state.courses].sort((a,b)=>(b.required?1:0)-(a.required?1:0));
+  document.getElementById("courses").innerHTML=listOrder.map(c=>{
+    const col=PALETTE[c.color]||PALETTE[0];
+    let body="";
+    if(c.event){
+      const d=c.sessions[0];
+      body=`<div class="tagline event">행사 · ${mdShort(d.date)} ${d.start}</div>`;
+    }else if(c.type==="async"){
+      body=`<div class="tagline online">온라인 · 자율 이수 (시간표 없음)</div>`;
+    }else if(c.type==="sessions"){
+      const dates=c.sessions.map(s=>s.date).sort();
+      body=`<div class="tagline">불규칙 · ${c.sessions.length}회</div><div class="meta">${mdShort(dates[0])} – ${mdShort(dates[dates.length-1])}</div>`;
+    }else{
+      const meets=c.meetings.map(m=>{const ko=(DAY_DEFS.find(d=>d.js===m.day)||{ko:"?"}).ko; return `<b>${ko}</b> ${m.slot} · ${esc(roomTail(m.room))}`;}).join("<br>");
+      let notes="";
+      if(c.exclude&&c.exclude.length) notes+=`<span class="note">휴강 ${c.exclude.map(mdShort).join(", ")}</span>`;
+      if(c.overrides&&Object.keys(c.overrides).length){ const ov=Object.keys(c.overrides).map(d=>`${mdShort(d)}→${roomTail(c.overrides[d])}`).join(", "); notes+=`<span class="note ov">강의실 예외 ${ov}</span>`; }
+      body=`<div class="meta">${meets}<br><span style="color:#9AA2AC">${mdShort(c.start)}–${mdShort(c.end)}</span></div>${notes}`;
+    }
+    const off = c.enabled===false;
+    return `<div class="course ${off?'off':''}">
+      <div class="ctrls">
+        <button class="sw-toggle ${off?'':'on'}" title="${off?'수강 안 함 → 켜기':'수강 중 → 끄기'}" onclick="toggleCourse('${c.id}')"><span class="knob"></span></button>
+        <button class="icon-btn" title="수정" onclick="openModal('${c.id}')">✎</button>
+        <button class="icon-btn" title="삭제" onclick="delCourse('${c.id}')">✕</button>
+      </div>
+      <h3><span class="dot" style="background:${col.fg}"></span>${esc(c.name)}${c.required?'<span class="req-badge">필수</span>':''}${c.ects!=null?`<span class="ects-badge">${c.ects} ECTS</span>`:'<span class="ects-badge unk">ECTS 미정</span>'}</h3>
+      ${body}
+    </div>`;
+  }).join("");
+}
+
+function toggleCourse(id){
+  const c=courseById(id);
+  c.enabled = (c.enabled===false);
+  saveCourses(); render();
+}
+
+/* modal */
+function openModal(id){
+  editingId=id||null;
+  const c=id?courseById(id):null;
+  editingType=c?(c.type||"weekly"):"weekly";
+  document.getElementById("modalTitle").textContent=id?"과목 수정":"과목 추가";
+  ["nameErr","dateErr","meetErr"].forEach(x=>document.getElementById(x).textContent="");
+  const weekly=editingType!=="sessions";
+  document.getElementById("weeklyFields").style.display=weekly?"block":"none";
+  document.getElementById("sessInfoField").style.display=weekly?"none":"block";
+
+  if(c){
+    cName.value=c.name; draftColor=c.color; cEcts.value=(c.ects!=null?c.ects:"");
+    if(weekly){
+      cStart.value=c.start; cEnd.value=c.end; cExclude.value=(c.exclude||[]).join(", ");
+      document.getElementById("meets").innerHTML=""; c.meetings.forEach(m=>addMeetRow(m));
+    }else{
+      document.getElementById("sessInfo").innerHTML=c.sessions.slice().sort((a,b)=>a.date<b.date?-1:1)
+        .map(s=>`${mdShort(s.date)} (${dow(s.date)}) · ${s.start}–${s.end} · ${esc(roomTail(s.room))}`).join("<br>");
+    }
+  }else{
+    cName.value=""; cStart.value="2026-09-14"; cEnd.value="2026-12-18"; cExclude.value=""; cEcts.value="";
+    draftColor=state.courses.length%PALETTE.length;
+    document.getElementById("meets").innerHTML=""; addMeetRow();
+  }
+  renderSwatches();
+  document.getElementById("overlay").classList.add("show");
+  cName.focus();
+}
+function closeModal(){ document.getElementById("overlay").classList.remove("show"); }
+function renderSwatches(){ document.getElementById("swatches").innerHTML=PALETTE.map((p,i)=>`<div class="swatch ${i===draftColor?'sel':''}" style="background:${p.fg}" onclick="pickColor(${i})"></div>`).join(""); }
+function pickColor(i){ draftColor=i; renderSwatches(); }
+function addMeetRow(m){
+  m=m||{}; const row=document.createElement("div"); row.className="meet-row";
+  row.innerHTML=`<select class="m-day">${DAY_DEFS.map(d=>`<option value="${d.js}" ${m.day===d.js?'selected':''}>${d.ko}</option>`).join("")}</select>
+    <select class="m-slot">${SLOTS.map(s=>`<option value="${s}" ${m.slot===s?'selected':''}>${s}</option>`).join("")}</select>
+    <input type="text" class="m-room" placeholder="강의실" value="${m.room?esc(m.room):''}">
+    <button class="rm" onclick="this.parentNode.remove()" title="삭제">✕</button>`;
+  document.getElementById("meets").appendChild(row);
+}
+function saveCourse(){
+  const name=cName.value.trim();
+  document.getElementById("nameErr").textContent="";
+  if(!name){ document.getElementById("nameErr").textContent="과목명을 입력하세요."; return; }
+  const ectsNum=parseInt(cEcts.value,10);
+  const ects=isNaN(ectsNum)?null:ectsNum;
+  if(editingType==="sessions"){
+    const c=courseById(editingId); c.name=name; c.color=draftColor; c.ects=ects;
+    saveCourses(); render(); closeModal(); return;
+  }
+  document.getElementById("dateErr").textContent=""; document.getElementById("meetErr").textContent="";
+  if(!cStart.value||!cEnd.value||cStart.value>cEnd.value){ document.getElementById("dateErr").textContent="시작일과 종료일을 올바르게 입력하세요."; return; }
+  const rows=[...document.querySelectorAll("#meets .meet-row")];
+  if(!rows.length){ document.getElementById("meetErr").textContent="요일을 하나 이상 추가하세요."; return; }
+  const meetings=rows.map(r=>({day:Number(r.querySelector(".m-day").value),slot:r.querySelector(".m-slot").value,room:r.querySelector(".m-room").value.trim()}));
+  const exclude=cExclude.value.split(",").map(s=>s.trim()).filter(Boolean);
+  if(editingId){
+    const c=courseById(editingId); c.name=name; c.color=draftColor; c.ects=ects; c.start=cStart.value; c.end=cEnd.value; c.meetings=meetings; c.exclude=exclude;
+  }else{
+    state.courses.push({id:"c"+Date.now(),name,short:name.split(/\s+/)[0].slice(0,8),color:draftColor,ects,type:"weekly",start:cStart.value,end:cEnd.value,meetings,exclude,overrides:{}});
+  }
+  saveCourses(); render(); closeModal();
+}
+function delCourse(id){
+  const c=courseById(id);
+  if(!confirm(`"${c.name}" 과목을 삭제할까요?`)) return;
+  state.courses=state.courses.filter(x=>x.id!==id); saveCourses(); render();
+}
+document.getElementById("overlay").addEventListener("click",e=>{ if(e.target.id==="overlay") closeModal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+const REQUIRED_IDS=["c1","c2","c3","c10"];
+const ECTS_SEED={c1:3,c2:3,c3:5,c4:3,c5:3,c6:3,c7:3,c8:3,c9:5,c10:5,c11:3};
+(async function(){
+  const saved=await loadCourses();
+  if(saved&&saved.length) state.courses=saved;
+  else state.courses=SEED;
+  SEED.forEach(sc=>{ if(!state.courses.some(c=>c.id===sc.id)) state.courses.push(JSON.parse(JSON.stringify(sc))); });
+  state.courses.forEach(c=>{
+    c.required=REQUIRED_IDS.includes(c.id);
+    if(c.ects==null && ECTS_SEED[c.id]!=null) c.ects=ECTS_SEED[c.id];
+  });
+  saveCourses();
+  render();
+})();
+</script>
+</body>
+</html>
