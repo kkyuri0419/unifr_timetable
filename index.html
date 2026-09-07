@@ -251,81 +251,14 @@ const PALETTE=[
 ];
 const TODAY="2026-09-07";
 
-const SEED=[
-  {id:"c1",name:"Foundation of informatics",short:"Info",color:0,type:"weekly",
-   start:"2026-09-14",end:"2026-12-14",
-   meetings:[{day:1,slot:"10:15-12:00",room:"PER 21, E140"}],
-   exclude:["2026-11-16"],overrides:{}},
-  {id:"c2",name:"Current topics in digital neuroscience",short:"Neuro",color:1,type:"weekly",
-   start:"2026-09-15",end:"2026-12-15",
-   meetings:[{day:2,slot:"10:15-12:00",room:"PER 21, E120"}],
-   exclude:["2026-12-08"],
-   overrides:{"2026-10-27":"PER 21, E040","2026-11-03":"PER 21, E140","2026-12-01":"PER 21, E140"}},
-  {id:"c3",name:"Cybernetic Systems: Bridging Brains, Machines and society",short:"Cyber",color:2,type:"weekly",
-   start:"2026-09-16",end:"2026-12-18",
-   meetings:[{day:3,slot:"08:15-10:00",room:"PER 21, A230"},{day:5,slot:"08:15-10:00",room:"PER 21, E130"}],
-   exclude:[],overrides:{}},
-  {id:"c4",name:"Central nervous system regeneration and repair",short:"CNS",color:3,type:"sessions",sessions:[
-    {date:"2026-09-24",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
-    {date:"2026-09-30",start:"09:15",end:"11:00",room:"PER 09, 0.108"},
-    {date:"2026-10-02",start:"08:15",end:"10:00",room:"PER 02, 0.403"},
-    {date:"2026-10-07",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
-    {date:"2026-10-08",start:"10:15",end:"12:00",room:"PER 21, G414"},
-    {date:"2026-10-13",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
-    {date:"2026-10-14",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
-    {date:"2026-10-21",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
-    {date:"2026-10-26",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
-    {date:"2026-10-26",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
-    {date:"2026-11-04",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
-    {date:"2026-11-05",start:"10:15",end:"12:00",room:"PER 21, G414"},
-  ]},
-  {id:"c5",name:"Scientific communication",short:"SciComm",color:4,type:"sessions",sessions:[
-    {date:"2026-09-21",start:"13:15",end:"15:00",room:"PER 09, 1.117"},
-    {date:"2026-09-28",start:"13:15",end:"15:00",room:"PER 09, 1.117"},
-    {date:"2026-10-05",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
-    {date:"2026-10-20",start:"13:15",end:"15:00",room:"PER 02, 0.403"},
-    {date:"2026-10-28",start:"10:15",end:"12:00",room:"PER 09, 1.117"},
-    {date:"2026-10-29",start:"10:15",end:"12:00",room:"PER 09, 1.117"},
-    {date:"2026-12-07",start:"10:15",end:"12:00",room:"PER 02, 0.403"},
-    {date:"2026-12-11",start:"09:15",end:"12:00",room:"PER 02, 0.403"},
-  ]},
-  {id:"c6",name:"Behavioural methods in neuroscience",short:"Behav",color:5,type:"sessions",sessions:[
-    {date:"2026-11-06",start:"13:15",end:"17:00",room:"PER 02, 0.403"},
-    {date:"2026-11-09",start:"13:15",end:"17:00",room:"PER 02, 0.403"},
-    {date:"2026-11-17",start:"13:15",end:"17:00",room:"PER 09, 0.114"},
-    {date:"2026-12-07",start:"13:15",end:"17:00",room:"PER 09, 0.108"},
-    {date:"2026-12-09",start:"13:15",end:"17:00",room:"PER 02, 0.403"},
-    {date:"2026-12-14",start:"13:15",end:"17:00",room:"PER 09, 0.108"},
-    {date:"2026-12-16",start:"13:15",end:"15:00",room:"PER 21, F205"},
-  ]},
-  {id:"c7",name:"Neuroethics",short:"Ethics",color:6,type:"sessions",sessions:[
-    {date:"2026-11-13",start:"09:15",end:"17:00",room:"RM 01, C-0.101"},
-    {date:"2026-12-11",start:"09:15",end:"17:00",room:"RM 01, C-0.101"},
-  ]},
-  {id:"c8",name:"Introduction to Matlab I",short:"Matlab",color:7,type:"weekly",
-   start:"2026-11-09",end:"2026-12-14",
-   meetings:[{day:1,slot:"08:15-10:00",room:"PER 21, B230"}],
-   exclude:["2026-11-16"],overrides:{}},
-  {id:"c9",name:"Big data infrastructures",short:"BigData",color:8,type:"weekly",
-   start:"2026-09-16",end:"2026-12-16",
-   meetings:[{day:3,slot:"14:15-17:00",room:"PER 21, A140"}],
-   exclude:[],overrides:{}},
-  {id:"c10",name:"Data analytics in Python",short:"Python",color:9,type:"async",ects:5},
-  {id:"c11",name:"Data analysis and statistics with the R programming language",short:"R stats",color:10,type:"weekly",
-   start:"2026-10-15",end:"2026-12-17",
-   meetings:[{day:4,slot:"13:15-16:00",room:"PER 21, B230"}],
-   exclude:[],overrides:{},enabled:false},
-  {id:"c12",name:"Introduction to the Master in Digital Neuroscience and Q&A",short:"석사 OT",color:11,type:"sessions",event:true,ects:0,sessions:[
-    {date:"2026-09-14",start:"16:00",end:"17:00",room:"PER 21, A303"},
-  ]},
-];
+const SEED=[{"id":"c1","name":"Foundation of informatics","short":"Info","color":0,"type":"weekly","start":"2026-09-14","end":"2026-12-14","meetings":[{"day":1,"slot":"10:15-12:00","room":"PER 21, E140"}],"exclude":["2026-11-16"],"overrides":{},"required":true,"ects":3},{"id":"c2","name":"Current topics in digital neuroscience","short":"Neuro","color":1,"type":"weekly","start":"2026-09-15","end":"2026-12-15","meetings":[{"day":2,"slot":"10:15-12:00","room":"PER 21, E120"}],"exclude":["2026-12-08"],"overrides":{"2026-10-27":"PER 21, E040","2026-11-03":"PER 21, E140","2026-12-01":"PER 21, E140"},"required":true,"ects":3},{"id":"c3","name":"Cybernetic Systems: Bridging Brains, Machines and society","short":"Cyber","color":2,"type":"weekly","start":"2026-09-16","end":"2026-12-18","meetings":[{"day":3,"slot":"08:15-10:00","room":"PER 21, A230"},{"day":5,"slot":"08:15-10:00","room":"PER 21, E130"}],"exclude":[],"overrides":{},"required":true,"ects":5},{"id":"c4","name":"Central nervous system regeneration and repair","short":"CNS","color":3,"type":"sessions","sessions":[{"date":"2026-09-24","start":"13:15","end":"15:00","room":"PER 02, 0.403"},{"date":"2026-09-30","start":"09:15","end":"11:00","room":"PER 09, 0.108"},{"date":"2026-10-02","start":"08:15","end":"10:00","room":"PER 02, 0.403"},{"date":"2026-10-07","start":"13:15","end":"15:00","room":"PER 02, 0.403"},{"date":"2026-10-08","start":"10:15","end":"12:00","room":"PER 21, G414"},{"date":"2026-10-13","start":"10:15","end":"12:00","room":"PER 02, 0.403"},{"date":"2026-10-14","start":"10:15","end":"12:00","room":"PER 02, 0.403"},{"date":"2026-10-21","start":"13:15","end":"15:00","room":"PER 02, 0.403"},{"date":"2026-10-26","start":"10:15","end":"12:00","room":"PER 02, 0.403"},{"date":"2026-10-26","start":"13:15","end":"15:00","room":"PER 02, 0.403"},{"date":"2026-11-04","start":"10:15","end":"12:00","room":"PER 02, 0.403"},{"date":"2026-11-05","start":"10:15","end":"12:00","room":"PER 21, G414"}],"required":false,"ects":3,"enabled":false},{"id":"c5","name":"Scientific communication","short":"SciComm","color":4,"type":"sessions","sessions":[{"date":"2026-09-21","start":"13:15","end":"15:00","room":"PER 09, 1.117"},{"date":"2026-09-28","start":"13:15","end":"15:00","room":"PER 09, 1.117"},{"date":"2026-10-05","start":"13:15","end":"15:00","room":"PER 02, 0.403"},{"date":"2026-10-20","start":"13:15","end":"15:00","room":"PER 02, 0.403"},{"date":"2026-10-28","start":"10:15","end":"12:00","room":"PER 09, 1.117"},{"date":"2026-10-29","start":"10:15","end":"12:00","room":"PER 09, 1.117"},{"date":"2026-12-07","start":"10:15","end":"12:00","room":"PER 02, 0.403"},{"date":"2026-12-11","start":"09:15","end":"12:00","room":"PER 02, 0.403"}],"required":false,"ects":3,"enabled":false},{"id":"c6","name":"Behavioural methods in neuroscience","short":"Behav","color":5,"type":"sessions","sessions":[{"date":"2026-11-06","start":"13:15","end":"17:00","room":"PER 02, 0.403"},{"date":"2026-11-09","start":"13:15","end":"17:00","room":"PER 02, 0.403"},{"date":"2026-11-17","start":"13:15","end":"17:00","room":"PER 09, 0.114"},{"date":"2026-12-07","start":"13:15","end":"17:00","room":"PER 09, 0.108"},{"date":"2026-12-09","start":"13:15","end":"17:00","room":"PER 02, 0.403"},{"date":"2026-12-14","start":"13:15","end":"17:00","room":"PER 09, 0.108"},{"date":"2026-12-16","start":"13:15","end":"15:00","room":"PER 21, F205"}],"required":false,"ects":3},{"id":"c7","name":"Neuroethics","short":"Ethics","color":6,"type":"sessions","sessions":[{"date":"2026-11-13","start":"09:15","end":"17:00","room":"RM 01, C-0.101"},{"date":"2026-12-11","start":"09:15","end":"17:00","room":"RM 01, C-0.101"}],"required":false,"ects":3,"enabled":true},{"id":"c8","name":"Introduction to Matlab I","short":"Matlab","color":7,"type":"weekly","start":"2026-11-09","end":"2026-12-14","meetings":[{"day":1,"slot":"08:15-10:00","room":"PER 21, B230"}],"exclude":["2026-11-16"],"overrides":{},"required":false,"ects":3},{"id":"c9","name":"Big data infrastructures","short":"BigData","color":8,"type":"weekly","start":"2026-09-16","end":"2026-12-16","meetings":[{"day":3,"slot":"14:15-17:00","room":"PER 21, A140"}],"exclude":[],"overrides":{},"required":false,"ects":5},{"id":"c10","name":"Data analytics in Python","short":"Python","color":9,"type":"async","ects":5,"required":true},{"id":"c11","name":"Data analysis and statistics with the R programming language","short":"R stats","color":10,"type":"weekly","start":"2026-10-15","end":"2026-12-17","meetings":[{"day":4,"slot":"13:15-16:00","room":"PER 21, B230"}],"exclude":[],"overrides":{},"enabled":false,"required":false,"ects":3},{"id":"c12","name":"Introduction to the Master in Digital Neuroscience and Q&A","short":"석사 OT","color":11,"type":"sessions","event":true,"ects":0,"sessions":[{"date":"2026-09-14","start":"16:00","end":"17:00","room":"PER 21, A303"}],"required":false}];
 
 let state={courses:[]};
 let editingId=null, editingType="weekly", draftColor=0;
 
 /* storage */
-async function loadCourses(){ try{ const v=localStorage.getItem("cal_courses_v4"); if(v) return JSON.parse(v); }catch(e){} return null; }
-async function saveCourses(){ try{ localStorage.setItem("cal_courses_v4", JSON.stringify(state.courses)); }catch(e){} }
+async function loadCourses(){ try{ const v=localStorage.getItem("cal_courses_v5"); if(v) return JSON.parse(v); }catch(e){} return null; }
+async function saveCourses(){ try{ localStorage.setItem("cal_courses_v5", JSON.stringify(state.courses)); }catch(e){} }
 
 /* date utils */
 function pad(n){ return String(n).padStart(2,"0"); }
@@ -601,7 +534,7 @@ async function exportHtml(){
     return;
   }
   const m=src.match(/cal_courses_v(\d+)/);
-  const curKey=m?m[0]:"cal_courses_v4";
+  const curKey=m?m[0]:"cal_courses_v5";
   const nextKey=m?("cal_courses_v"+(parseInt(m[1],10)+1)):"cal_courses_v5";
   const seedJson=JSON.stringify(state.courses);
   let out=src.replace(/const SEED=\[[\s\S]*?\n\];/, ()=>"const SEED="+seedJson+";");
